@@ -5,59 +5,44 @@
 // These "include" code from the C++ library and SFML too
 #include "stdafx.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 // This is the main C++ program- Duh!
 // It is where our game starts from
 int main()
 {
-	// Make a window that is 800 by 200 pixels
-	// And has the title "Hello from SFML"
-	sf::RenderWindow window(sf::VideoMode(800, 200), "Hello from SFML");
+	sf::IpAddress ip = sf::IpAddress::getLocalAddress();
+	sf::TcpSocket socket;
+	char connectionType, mode; 
+	char buffer[2000];
+	size_t received;
+	string text = "Connected to ";
 
-	// Create a "Text" object called "message". Weird but we will learn about objects soon
-	sf::Text message;
+	cout << "Enter (s) for Server, Enter for (c) for client" << endl;
+	cin >> connectionType;
 
-	// We need to choose a font
-	sf::Font font;
-	font.loadFromFile("28 Days Later.ttf");
-
-	// Set the font to our message
-	message.setFont(font);
-
-	// Assign the actual message
-	message.setString("Hello world");
-
-	// Make it really big
-	message.setCharacterSize(100);
-
-	// Choose a color
-	message.setFillColor(sf::Color::White);
-
-	// This "while" loop goes round and round- perhaps forever
-	while (window.isOpen())
+	if (connectionType == 's')
 	{
-		// The next 6 lines of code detect if the window is closed
-		// And then shuts down the program
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				// Someone closed the window- bye
-				window.close();
-		}
+		sf::TcpListener listener;
+		listener.listen(2000);
+		listener.accept(socket);
+		text += "Server";
+	}
+	else if (connectionType == 'c')
+	{
+		socket.connect(ip, 2000);
+		text += "Client";
+	}
 
-		// Clear everything from the last run of the while loop
-		window.clear();
+	socket.send(text.c_str(), text.size() + 1);
+	socket.receive(buffer, sizeof(buffer), received);
 
-		// Draw our message
-		window.draw(message);
+	cout << buffer << endl;
 
-		// Draw our game scene here
-		// Just a message for now
-
-		// Show everything we just drew
-		window.display();
-	}// This is the end of the "while" loop
-
+	system("pause");
 	return 0;
 }
