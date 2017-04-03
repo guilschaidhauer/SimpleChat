@@ -16,11 +16,20 @@ using namespace std;
 int main()
 {
 	sf::IpAddress ip = sf::IpAddress::getLocalAddress();
-	sf::TcpSocket socket;
-	char connectionType, mode; 
-	char buffer[2000];
-	size_t received;
-	string text = "Connected to ";
+
+	sf::TcpSocket socket1;
+	sf::TcpSocket socket2;
+	
+	char buffer1[2000];
+	char buffer2[2000];
+
+	size_t received1;
+	size_t received2;
+
+	char connectionType, mode;
+
+	string text1 = "Connected to ";
+	string text2 = "Connected to ";
 
 	cout << "Enter (s) for Server, Enter for (c) for client" << endl;
 	cin >> connectionType;
@@ -29,23 +38,49 @@ int main()
 	{
 		sf::TcpListener listener;
 		listener.listen(2000);
-		listener.accept(socket);
-		text += "Server";
+		listener.accept(socket1);
+
+		sf::TcpListener listener1;
+		listener1.listen(2001);
+		listener1.accept(socket2);
+
+		text1 += "Server";
+		text2 += "Server";
 		mode = 's';
+
+		socket1.send(text1.c_str(), text1.size() + 1);
+		socket1.receive(buffer1, sizeof(buffer1), received1);
+
+		socket2.send(text2.c_str(), text2.size() + 1);
+		socket2.receive(buffer2, sizeof(buffer2), received2);
+
+		cout << buffer1 << endl;
+		cout << buffer2 << endl;
 	}
-	else if (connectionType == 'c')
+	else if (connectionType == '1')
 	{
-		socket.connect(ip, 2000);
-		text += "Client";
+		socket1.connect(ip, 2000);
+		text1 += "Client1";
 		mode = 'r';
+
+		socket1.send(text1.c_str(), text1.size() + 1);
+		socket1.receive(buffer1, sizeof(buffer1), received1);
+
+		cout << buffer1 << endl;
+	}
+	else if (connectionType == '2')
+	{
+		socket2.connect(ip, 2001);
+		text1 += "Client2";
+		mode = 'r';
+
+		socket2.send(text1.c_str(), text1.size() + 1);
+		socket2.receive(buffer2, sizeof(buffer2), received2);
+
+		cout << buffer2 << endl;
 	}
 
-	socket.send(text.c_str(), text.size() + 1);
-	socket.receive(buffer, sizeof(buffer), received);
-
-	cout << buffer << endl;
-
-	bool done = false;
+	/*bool done = false;
 
 	while (!done)
 	{
@@ -64,7 +99,7 @@ int main()
 				mode = 's';
 			}
 		}
-	}
+	}*/
 
 	system("pause");
 	return 0;
