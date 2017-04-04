@@ -80,26 +80,37 @@ int main()
 		cout << buffer2 << endl;
 	}
 
-	/*bool done = false;
+	cout << endl;
+
+	bool done = false;
 
 	while (!done)
 	{
-		if (mode == 's')
+		if (connectionType == 's')
 		{
-			getline(cin, text);
-			socket.send(text.c_str(), text.size() + 1);
-			mode = 'r';
-		}
-		else if (mode == 'r')
-		{
-			socket.receive(buffer, sizeof(buffer), received);
-			if (received > 0)
+			socket1.receive(buffer1, sizeof(buffer1), received1);
+			if (received1 > 0)
 			{
-				cout << "Received: " << buffer << endl;
-				mode = 's';
+				cout << "Received: " << buffer1 << endl;
+				socket2.send(buffer1, sizeof(buffer1));
 			}
 		}
-	}*/
+		else if (connectionType == '1')
+		{
+			cout << "Type in your message: ";
+			cin >> text1;
+			socket1.send(text1.c_str(), text1.size() + 1);
+		}
+		else if (connectionType == '2')
+		{
+			socket2.receive(buffer2, sizeof(buffer2), received2);
+			if (received2 > 0)
+			{
+				cout << "Received from client 1: " << buffer2 << endl;
+			}
+		}
+
+	}
 
 	system("pause");
 	return 0;
